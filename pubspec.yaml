@@ -1,0 +1,96 @@
+name: heart_beat
+description: "Heart Beats - Romantic Compatibility App"
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+    
+  # UI and animations
+  flutter_animate: ^4.1.1
+  confetti: ^0.7.0
+  cupertino_icons: ^1.0.8
+  
+  # State management
+  provider: ^6.1.1
+  
+  # Storage
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  shared_preferences: ^2.2.0
+  
+  # Networking
+  dio: ^5.3.3
+  http: ^1.2.1
+  
+  # Utilities
+  intl: ^0.18.1
+  uuid: ^4.2.1
+  flutter_local_notifications: ^19.0.0
+  
+  # Performance optimization
+  flutter_cache_manager: ^3.3.1
+  cached_network_image: ^3.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  hive_generator: ^2.0.1
+  build_runner: ^2.4.8
+  
+  # Web optimization
+  flutter_web_optimizer: ^1.0.0
+  
+  # App icon generator
+  flutter_launcher_icons: ^0.13.1
+  
+  # Native splash screen
+  flutter_native_splash: ^2.3.10
+
+# Flutter launcher icons configuration
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/app_icon.png"
+  min_sdk_android: 21
+  web:
+    generate: true
+    image_path: "assets/images/app_icon.png"
+    background_color: "#e91e63"
+    theme_color: "#e91e63"
+
+# Flutter native splash configuration
+flutter_native_splash:
+  color: "#e91e63"
+  image: assets/images/splash_icon.png
+  color_dark: "#121212"
+  image_dark: assets/images/splash_icon.png
+  android: true
+  ios: true
+  web: true
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/animations/
+    
+  #fonts:
+    #- family: Montserrat
+      #fonts:
+        #- asset: assets/fonts/Montserrat-Regular.ttf
+        #- asset: assets/fonts/Montserrat-Bold.ttf
+         # weight: 700
+        #- asset: assets/fonts/Montserrat-Italic.ttf
+        #  style: italic
+    #- family: Pacifico
+    #  fonts:
+     #   - asset: assets/fonts/Pacifico-Regular.ttf

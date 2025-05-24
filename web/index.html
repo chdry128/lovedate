@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Heart Beats - Discover your romantic compatibility with our love calculators, relationship games, and romantic tools.">
+  <meta name="keywords" content="love calculator, relationship app, couple games, romantic compatibility, zodiac match, heart beats">
+  <meta name="author" content="Heart Beats">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://heartbeats.app/">
+  <meta property="og:title" content="Heart Beats - Romantic Compatibility App">
+  <meta property="og:description" content="Discover your romantic compatibility with our love calculators, relationship games, and romantic tools.">
+  <meta property="og:image" content="icons/Icon-512.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://heartbeats.app/">
+  <meta property="twitter:title" content="Heart Beats - Romantic Compatibility App">
+  <meta property="twitter:description" content="Discover your romantic compatibility with our love calculators, relationship games, and romantic tools.">
+  <meta property="twitter:image" content="icons/Icon-512.png">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Heart Beats">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="canonical" href="https://heartbeats.app/">
+
+  <title>Heart Beats - Romantic Compatibility App</title>
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Preconnect to required origins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <style>
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100vw;
+      background: linear-gradient(135deg, #9c27b0, #e91e63, #f44336);
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 999;
+    }
+    .loading-heart {
+      width: 100px;
+      height: 100px;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div id="loading" class="loading">
+    <div class="loading-heart">❤️</div>
+  </div>
+  
+  <script>
+    // Register service worker for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('flutter_service_worker.js');
+      });
+    }
+    
+    // Remove loading screen when Flutter app is ready
+    window.addEventListener('flutter-first-frame', function() {
+      const loadingElement = document.getElementById('loading');
+      if (loadingElement) {
+        loadingElement.classList.add('fade-out');
+        setTimeout(function() {
+          loadingElement.remove();
+        }, 500);
+      }
+    });
+  </script>
+  
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

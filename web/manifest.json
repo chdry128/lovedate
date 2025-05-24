@@ -1,0 +1,68 @@
+{
+    "name": "Heart Beats - Romantic Compatibility App",
+    "short_name": "Heart Beats",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#e91e63",
+    "theme_color": "#e91e63",
+    "description": "Discover your romantic compatibility with our love calculators, relationship games, and romantic tools.",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "categories": ["lifestyle", "entertainment", "social"],
+    "screenshots": [
+        {
+            "src": "screenshots/home.png",
+            "sizes": "1080x1920",
+            "type": "image/png",
+            "platform": "narrow",
+            "label": "Home Screen"
+        },
+        {
+            "src": "screenshots/calculator.png",
+            "sizes": "1080x1920",
+            "type": "image/png",
+            "platform": "narrow",
+            "label": "Love Calculator"
+        }
+    ],
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Love Calculator",
+            "short_name": "Love Calc",
+            "description": "Calculate love compatibility",
+            "url": "/?page=love_calculator",
+            "icons": [{ "src": "icons/love_calc.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "Couple Game",
+            "short_name": "Game",
+            "description": "Play the couple game",
+            "url": "/?page=game",
+            "icons": [{ "src": "icons/game.png", "sizes": "192x192" }]
+        }
+    ]
+}
