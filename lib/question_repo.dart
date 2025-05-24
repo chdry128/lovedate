@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Repository for managing "Would You Rather" questions
 /// Handles fetching, caching, and managing questions
@@ -11,8 +12,9 @@ class QuestionRepository {
   // API constants
   static const String _apiUrl =
       'https://integrate.api.nvidia.com/v1/chat/completions';
-  static const String _apiKey =
-      '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';
+  // static const String _apiKey = // Replaced by dotenv
+  //     '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';
+  static final String? _apiKey = dotenv.env['QUESTION_API_KEY'];
   static const String _modelName = 'meta/llama-4-maverick-17b-128e-instruct';
 
   // Cache keys
@@ -90,6 +92,12 @@ class QuestionRepository {
     QuestionIntensity? intensity,
     int limit,
   ) async {
+    if (_apiKey == null) {
+      debugPrint(
+          "QUESTION_API_KEY not found in .env file. API call will fail.");
+      // Fallback to local questions as the API call will not be attempted.
+      return _getLocalQuestions(intensity: intensity, limit: limit);
+    }
     try {
       final response = await _dio.post(
         _apiUrl,

@@ -1,24 +1,6 @@
 import 'package:flutter/material.dart';
 import 'theam.dart';
 
-void main() {
-  runApp(ZodicApp());
-}
-
-class ZodicApp extends StatelessWidget {
-  const ZodicApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Zodic Page',
-      theme: AppTheme.lightTheme,
-      home: ZodicScreen(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
 class ZodicScreen extends StatefulWidget {
   const ZodicScreen({super.key});
 
@@ -143,10 +125,13 @@ class _ZodicScreenState extends State<ZodicScreen> {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
+          gradient: LinearGradient( // Use theme gradient
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Colors.deepPurple[100]!, Colors.red[300]!],
+            colors: [
+              Theme.of(context).colorScheme.primaryContainer.withOpacity(0.6),
+              Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.8),
+            ],
           ),
         ),
         child: Center(
@@ -159,17 +144,16 @@ class _ZodicScreenState extends State<ZodicScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.star, color: Colors.yellow[700], size: 40),
+                    Icon(Icons.star, color: Theme.of(context).colorScheme.secondary, size: 40), // Use theme color
                     SizedBox(width: 10),
                     Text(
                       'Zodiac Compatibility',
-                      style: TextStyle(
-                        fontSize: 25,
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith( // Use theme text style
                         fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple[900],
+                        color: Theme.of(context).colorScheme.primary,
                         shadows: [
                           Shadow(
-                            color: Colors.redAccent,
+                            color: Theme.of(context).colorScheme.secondary.withOpacity(0.5), // Use theme color
                             offset: Offset(2, 2),
                             blurRadius: 5,
                           ),
@@ -177,7 +161,7 @@ class _ZodicScreenState extends State<ZodicScreen> {
                       ),
                     ),
                     SizedBox(width: 5),
-                    Icon(Icons.star, color: Colors.yellow[700], size: 40),
+                    Icon(Icons.star, color: Theme.of(context).colorScheme.secondary, size: 40), // Use theme color
                   ],
                 ),
                 SizedBox(height: 40),
@@ -187,11 +171,11 @@ class _ZodicScreenState extends State<ZodicScreen> {
                   width: 400,
                   padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Theme.of(context).colorScheme.surface.withOpacity(0.8), // Use theme surface color
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.redAccent.withOpacity(0.4),
+                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.3), // Use theme secondary color
                         spreadRadius: 5,
                         blurRadius: 7,
                       ),
@@ -202,47 +186,37 @@ class _ZodicScreenState extends State<ZodicScreen> {
                       // Person 1 Input
                       Text(
                         'Your Details',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.pink[800],
-                        ),
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith( // Use theme text style
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       SizedBox(height: 15),
                       TextField(
                         controller: _nameController1,
-                        decoration: InputDecoration(
+                        decoration: InputDecoration( // Use theme InputDecoration
                           labelText: 'Your Name',
-                          labelStyle: TextStyle(color: Colors.pink[700]),
                           prefixIcon: Icon(
                             Icons.person,
-                            color: Colors.redAccent,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            borderSide: BorderSide(color: Colors.redAccent),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            borderSide: BorderSide(color: Colors.pink),
+                            color: Theme.of(context).colorScheme.secondary, // Use theme secondary color
                           ),
                         ),
                       ),
                       SizedBox(height: 15),
                       ElevatedButton(
                         onPressed: () => _selectDate(context, true),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepPurple[400],
-                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
+                        // style: ElevatedButton.styleFrom( // Use theme default style or define globally
+                        //   backgroundColor: Colors.deepPurple[400],
+                        //   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        //   shape: RoundedRectangleBorder(
+                        //     borderRadius: BorderRadius.circular(15),
+                        //   ),
+                        // ),
                         child: Text(
                           _selectedDate1 == null
                               ? 'Select Your Birth Date'
                               : 'Birth Date: ${_selectedDate1!.day}/${_selectedDate1!.month}/${_selectedDate1!.year}',
-                          style: TextStyle(color: Colors.white),
+                          // style: TextStyle(color: Colors.white), // Handled by theme
                         ),
                       ),
                       if (_zodiacSign1.isNotEmpty)
@@ -250,11 +224,10 @@ class _ZodicScreenState extends State<ZodicScreen> {
                           padding: EdgeInsets.only(top: 10),
                           child: Text(
                             'Your Sign: $_zodiacSign1',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.red[800],
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith( // Use theme text style
+                                  color: Theme.of(context).colorScheme.secondary,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                         ),
                       SizedBox(height: 30),
@@ -262,47 +235,37 @@ class _ZodicScreenState extends State<ZodicScreen> {
                       // Person 2 Input
                       Text(
                         'Your Partner\'s Details',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.pink[800],
-                        ),
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith( // Use theme text style
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       SizedBox(height: 15),
                       TextField(
                         controller: _nameController2,
-                        decoration: InputDecoration(
+                        decoration: InputDecoration( // Use theme InputDecoration
                           labelText: 'Partner\'s Name',
-                          labelStyle: TextStyle(color: Colors.pink[700]),
                           prefixIcon: Icon(
                             Icons.favorite,
-                            color: Colors.redAccent,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            borderSide: BorderSide(color: Colors.redAccent),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            borderSide: BorderSide(color: Colors.deepPurple),
+                            color: Theme.of(context).colorScheme.secondary, // Use theme secondary color
                           ),
                         ),
                       ),
                       SizedBox(height: 15),
                       ElevatedButton(
                         onPressed: () => _selectDate(context, false),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepPurple[400],
-                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
+                        // style: ElevatedButton.styleFrom( // Use theme default style or define globally
+                        //   backgroundColor: Colors.deepPurple[400],
+                        //   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        //   shape: RoundedRectangleBorder(
+                        //     borderRadius: BorderRadius.circular(15),
+                        //   ),
+                        // ),
                         child: Text(
                           _selectedDate2 == null
                               ? 'Select Partner\'s Birth Date'
                               : 'Birth Date: ${_selectedDate2!.day}/${_selectedDate2!.month}/${_selectedDate2!.year}',
-                          style: TextStyle(color: Colors.white),
+                          // style: TextStyle(color: Colors.white), // Handled by theme
                         ),
                       ),
                       if (_zodiacSign2.isNotEmpty)
@@ -310,35 +273,34 @@ class _ZodicScreenState extends State<ZodicScreen> {
                           padding: EdgeInsets.only(top: 10),
                           child: Text(
                             'Partner\'s Sign: $_zodiacSign2',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.red[800],
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith( // Use theme text style
+                                  color: Theme.of(context).colorScheme.secondary,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                         ),
                       SizedBox(height: 30),
 
                       // Calculate Button
-                      ElevatedButton(
+                      ElevatedButton( // Use theme ElevatedButton
                         onPressed: _calculateCompatibilityResult,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.redAccent,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 40,
-                            vertical: 15,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
+                        // style: ElevatedButton.styleFrom( // Handled by theme
+                        //   backgroundColor: Colors.redAccent,
+                        //   padding: EdgeInsets.symmetric(
+                        //     horizontal: 40,
+                        //     vertical: 15,
+                        //   ),
+                        //   shape: RoundedRectangleBorder(
+                        //     borderRadius: BorderRadius.circular(30),
+                        //   ),
+                        // ),
                         child: Text(
                           'Check Compatibility',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          // style: TextStyle( // Handled by theme
+                          //   fontSize: 18,
+                          //   color: Colors.white,
+                          //   fontWeight: FontWeight.bold,
+                          // ),
                         ),
                       ),
                     ],
@@ -353,37 +315,34 @@ class _ZodicScreenState extends State<ZodicScreen> {
                       width: 400,
                       padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Theme.of(context).colorScheme.surface.withOpacity(0.8), // Use theme surface color
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: Column(
                         children: [
                           Text(
                             'Compatibility Result',
-                            style: TextStyle(
-                              fontSize: 24,
-                              color: Colors.deepPurple[900],
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context).textTheme.headlineSmall?.copyWith( // Use theme text style
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                           SizedBox(height: 15),
                           if (_zodiacSign1.isNotEmpty && _zodiacSign2.isNotEmpty)
                             Text(
                               '$_zodiacSign1 & $_zodiacSign2',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.red[800],
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith( // Use theme text style
+                                    color: Theme.of(context).colorScheme.secondary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
                           SizedBox(height: 15),
                           Text(
                             _compatibilityResult,
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.deepPurple[800],
-                              fontStyle: FontStyle.italic,
-                            ),
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith( // Use theme text style
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontStyle: FontStyle.italic,
+                                ),
                             textAlign: TextAlign.center,
                           ),
                         ],

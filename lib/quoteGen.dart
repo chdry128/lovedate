@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:heart_beat/theam.dart';
 
 class RomanticQuotesPage extends StatefulWidget {
   const RomanticQuotesPage({super.key});
@@ -29,7 +31,15 @@ class _RomanticQuotesPageState extends State<RomanticQuotesPage> {
 
     try {
       const url = 'https://integrate.api.nvidia.com/v1/chat/completions';
-      const apiKey = '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';
+      final apiKey = dotenv.env['NVIDIA_API_KEY'];
+
+      if (apiKey == null) {
+        setState(() {
+          quote = "API key not found. Please set NVIDIA_API_KEY in .env file.";
+          isLoading = false;
+        });
+        return;
+      }
 
       // Updated headers and request body format
       var response = await http.post(
@@ -84,13 +94,13 @@ class _RomanticQuotesPageState extends State<RomanticQuotesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.pink[50],
+      // backgroundColor: Colors.pink[50], // Removed hardcoded color
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           "Love & Desire Quotes",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          // style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold), // Use AppBar theme
         ),
-        backgroundColor: Colors.redAccent,
+        // backgroundColor: Colors.redAccent, // Use AppBar theme
         elevation: 0,
       ),
       body: Padding(
@@ -126,10 +136,9 @@ class _RomanticQuotesPageState extends State<RomanticQuotesPage> {
                   child: SingleChildScrollView(
                     child: Text(
                       quote,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontStyle: FontStyle.italic,
-                      ),
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontStyle: FontStyle.italic,
+                          ),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -139,14 +148,17 @@ class _RomanticQuotesPageState extends State<RomanticQuotesPage> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: isLoading ? null : generateQuote,
-              child:
-              isLoading
-                  ? const CircularProgressIndicator()
+              child: isLoading
+                  ? CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                          Theme.of(context).colorScheme.primary),
+                    )
                   : const Text("Generate Quote"),
             ),
             IconButton(
               onPressed: copyToClipboard,
-              icon: const Icon(Icons.copy),
+              icon: Icon(Icons.copy,
+                  color: Theme.of(context).colorScheme.primary),
               tooltip: "Copy Quote",
             ),
           ],
