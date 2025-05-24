@@ -7,7 +7,7 @@ class AppTheme {
   // Common colors
   static const Color primaryColor = Colors.pink;
   static const Color secondaryColor = Colors.purple;
-  static const Color accentColor = Colors.red;
+  // static const Color accentColor = Colors.red; // Unused
 
   // Light theme
   static ThemeData get lightTheme {

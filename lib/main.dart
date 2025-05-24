@@ -3,16 +3,17 @@ import 'package:flutter/services.dart';
 import 'package:heart_beat/question_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+// import 'package:flutter/foundation.dart' show kIsWeb; // Unused
 import 'dateCalc.dart';
 import 'game_screen.dart';
 import 'name.dart';
-import 'zodicMatch.dart';
 import 'quoteGen.dart';
-import 'loveCalc.dart';
 import 'package:heart_beat/IntenCalc.dart';
+import 'loveCalc.dart'; // Corrected import for LoveCalculatorScreen
+import 'zodicMatch.dart'; // Corrected import for ZodicScreen
 import 'question_repo.dart';
 import 'theam.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 // App routes for better navigation
 class AppRoutes {
@@ -41,6 +42,9 @@ void main() async {
   Hive.registerAdapter(QuestionIntensityAdapter());
   Hive.registerAdapter(WYRQuestionAdapter());
 
+  // Initialize dotenv
+  await dotenv.load(fileName: ".env");
+
   // Run the app
   runApp(const MyApp());
 }
@@ -63,9 +67,9 @@ class MyApp extends StatelessWidget {
         themeMode: ThemeMode.system, // Respect system theme
         home: const HomePage(),
         routes: {
-          AppRoutes.loveCalculator: (context) => const LoveCalculatorApp(),
-          AppRoutes.intensityCalculator: (context) => const SexIntensityApp(),
-          AppRoutes.compatibility: (context) => const ZodicApp(),
+          AppRoutes.loveCalculator: (context) => const LoveCalculatorScreen(),
+          AppRoutes.intensityCalculator: (context) => const SexIntensityScreen(),
+          AppRoutes.compatibility: (context) => const ZodicScreen(),
           AppRoutes.quotes: (context) => RomanticQuotesPage(),
           AppRoutes.nameMatch: (context) => const NameCompatibilityPage(),
           AppRoutes.loveGame:

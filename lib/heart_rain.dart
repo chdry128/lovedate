@@ -8,18 +8,14 @@ import 'package:flutter/scheduler.dart';
 class HeartRainEffect extends StatefulWidget {
   /// The number of hearts to display
   final int heartCount;
-  
-  /// The duration of the animation
-  final Duration animationDuration;
-  
-  /// Whether to automatically start the animation
-  final bool autoStart;
+  // final Duration animationDuration; // Unused
+  // final bool autoStart; // Unused in current logic, initState uses widget.autoStart
 
   const HeartRainEffect({
-    super.key, 
-    this.heartCount = 20, 
-    this.animationDuration = const Duration(seconds: 2),
-    this.autoStart = true,
+    super.key,
+    this.heartCount = 20,
+    // this.animationDuration = const Duration(seconds: 2), // Unused
+    // this.autoStart = true, // Unused directly, logic in initState
   });
 
   @override
@@ -44,9 +40,9 @@ class _HeartRainEffectState extends State<HeartRainEffect>
     // Initialize hearts with optimized count
     _initializeHearts();
     
-    if (widget.autoStart) {
-      _startAnimation();
-    }
+    // if (widget.autoStart) { // widget.autoStart is implicitly true due to default constructor
+    _startAnimation();
+    // }
   }
   
   @override

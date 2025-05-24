@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:heart_beat/theam.dart'; // Import AppTheme
 
 class NameCompatibilityPage extends StatefulWidget {
   const NameCompatibilityPage({super.key});
@@ -31,7 +33,16 @@ class _NameCompatibilityPageState extends State<NameCompatibilityPage> {
 
     try {
       const url = 'https://integrate.api.nvidia.com/v1/chat/completions';
-      const apiKey = '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';
+      final apiKey = dotenv.env['NAME_API_KEY'];
+
+      if (apiKey == null) {
+        setState(() {
+          _compatibilityResult =
+              "API key for name generation not found. Please set NAME_API_KEY in .env file.";
+          _isLoading = false;
+        });
+        return;
+      }
 
       var response = await http.post(
         Uri.parse(url),
@@ -104,12 +115,12 @@ class _NameCompatibilityPageState extends State<NameCompatibilityPage> {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
+          gradient: LinearGradient( // Use theme gradient
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.deepPurple[100]!,
-              Colors.red[300]!,
+              Theme.of(context).colorScheme.primaryContainer.withOpacity(0.6),
+              Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.8),
             ],
           ),
         ),
@@ -123,17 +134,16 @@ class _NameCompatibilityPageState extends State<NameCompatibilityPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.favorite, color: Colors.red[700], size: 30),
+                    Icon(Icons.favorite, color: Theme.of(context).colorScheme.primary, size: 30), // Use theme color
                     SizedBox(width: 10),
                     Text(
                       'Name Compatibility',
-                      style: TextStyle(
-                        fontSize: 30,
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith( // Use theme text style
                         fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple[900],
+                        color: Theme.of(context).colorScheme.primary,
                         shadows: [
                           Shadow(
-                            color: Colors.redAccent,
+                            color: Theme.of(context).colorScheme.secondary.withOpacity(0.5), // Use theme color
                             offset: Offset(2, 2),
                             blurRadius: 5,
                           ),
@@ -141,7 +151,7 @@ class _NameCompatibilityPageState extends State<NameCompatibilityPage> {
                       ),
                     ),
                     SizedBox(width: 10),
-                    Icon(Icons.favorite, color: Colors.red[700], size: 30),
+                    Icon(Icons.favorite, color: Theme.of(context).colorScheme.primary, size: 30), // Use theme color
                   ],
                 ),
                 SizedBox(height: 40),
@@ -151,11 +161,11 @@ class _NameCompatibilityPageState extends State<NameCompatibilityPage> {
                   width: 400,
                   padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity( 0.5),
+                    color: Theme.of(context).colorScheme.surface.withOpacity(0.8), // Use theme surface color
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.redAccent.withOpacity(0.4),
+                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.3), // Use theme secondary color
                         spreadRadius: 5,
                         blurRadius: 7,
                       ),
@@ -165,64 +175,30 @@ class _NameCompatibilityPageState extends State<NameCompatibilityPage> {
                     children: [
                       TextField(
                         controller: _yourNameController,
-                        style: TextStyle(color: Colors.deepPurple[900], fontSize: 16),
-                        decoration: InputDecoration(
+                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16), // Use theme onSurface color
+                        decoration: InputDecoration( // Use theme InputDecoration
                           labelText: 'Your Name, Sweetheart',
-                          labelStyle: TextStyle(color: Colors.deepPurple[700]),
-                          prefixIcon: Icon(Icons.person, color: Colors.redAccent),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            borderSide: BorderSide(color: Colors.redAccent),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            borderSide: BorderSide(color: Colors.deepPurple),
-                          ),
+                          prefixIcon: Icon(Icons.person, color: Theme.of(context).colorScheme.secondary), // Use theme secondary color
                         ),
                       ),
                       SizedBox(height: 20),
                       TextField(
                         controller: _partnerNameController,
-                        style: TextStyle(color: Colors.deepPurple[900], fontSize: 16),
-                        decoration: InputDecoration(
+                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16), // Use theme onSurface color
+                        decoration: InputDecoration( // Use theme InputDecoration
                           labelText: "Your Lover's Name",
-                          labelStyle: TextStyle(color: Colors.deepPurple[700]),
-                          prefixIcon: Icon(Icons.favorite, color: Colors.redAccent),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.redAccent),
-                            
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.deepPurple),
-                          ),
+                          prefixIcon: Icon(Icons.favorite, color: Theme.of(context).colorScheme.secondary), // Use theme secondary color
                         ),
                       ),
                       SizedBox(height: 30),
 
                       // Generate Button
-                      ElevatedButton(
+                      ElevatedButton( // Use theme ElevatedButton
                         onPressed: _isLoading ? null : _generateNickname,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.redAccent,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 40,
-                            vertical: 15,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
                         child: _isLoading
-                            ? CircularProgressIndicator(color: Colors.white)
+                            ? CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.onPrimary)) // Use theme onPrimary color
                             : Text(
                                 'Generate Love Nickname',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
                               ),
                       ),
                     ],
@@ -237,49 +213,45 @@ class _NameCompatibilityPageState extends State<NameCompatibilityPage> {
                       children: [
                         Text(
                           'Love Compatibility',
-                          style: TextStyle(
-                            fontSize: 24,
-                            color: Colors.deepPurple[900],
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith( // Use theme text style
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
                         SizedBox(height: 10),
                         Container(
                           padding: EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.8),
+                            color: Theme.of(context).colorScheme.surface.withOpacity(0.8), // Use theme surface color
                             borderRadius: BorderRadius.circular(15),
                           ),
                           child: Column(
                             children: [
                               Text(
                                 _compatibilityResult,
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.red[800],
-                                  fontStyle: FontStyle.italic,
-                                ),
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith( // Use theme text style
+                                      color: Theme.of(context).colorScheme.primary,
+                                      fontStyle: FontStyle.italic,
+                                    ),
                                 textAlign: TextAlign.center,
                               ),
                               if (_nickname.isNotEmpty) ...[
                                 SizedBox(height: 20),
                                 Text(
                                   'Your Love Nickname:',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.deepPurple[800],
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith( // Use theme text style
+                                        color: Theme.of(context).colorScheme.primary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                 ),
                                 SizedBox(height: 10),
                                 Text(
                                   _nickname,
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    color: Colors.redAccent,
-                                    fontWeight: FontWeight.bold,
-                                    fontStyle: FontStyle.italic,
-                                  ),
+                                  style: Theme.of(context).textTheme.headlineSmall?.copyWith( // Use theme text style
+                                        color: Theme.of(context).colorScheme.secondary, // Use secondary for nickname emphasis
+                                        fontWeight: FontWeight.bold,
+                                        fontStyle: FontStyle.italic,
+                                      ),
                                 ),
                               ],
                             ],
@@ -291,12 +263,12 @@ class _NameCompatibilityPageState extends State<NameCompatibilityPage> {
                           width: 300,
                           child: LinearProgressIndicator(
                             value: _compatibilityPercentage / 100,
-                            backgroundColor: Colors.purple[100],
+                            backgroundColor: Theme.of(context).colorScheme.secondaryContainer, // Use theme secondary container
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.redAccent,
+                              Theme.of(context).colorScheme.primary, // Use theme primary
                             ),
                             minHeight: 12,
-                            borderRadius: BorderRadius.circular(6),
+                            // borderRadius: BorderRadius.circular(6), // Consider if this is part of global theme
                           ),
                         ),
                       ],
