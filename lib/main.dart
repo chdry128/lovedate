@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:flutter_helmet_async/flutter_helmet_async.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'love_letter_generator.dart';
 import 'dateCalc.dart';
 import 'name.dart';
 import 'zodicMatch.dart';
-import 'quoteGen.dart';
-import 'loveCalc.dart';
+// import 'quoteGen.dart'; // Removed
+// import 'loveCalc.dart'; // Removed
 import 'package:heart_beat/IntenCalc.dart';
 import 'theam.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:heart_beat/widgets/deferred_loader.dart'; // Added
+
+// Deferred imports for features
+import 'package:heart_beat/features/love_calculator_feature.dart' deferred as love_calculator_lib;
+import 'package:heart_beat/features/quotes_feature.dart' deferred as quotes_lib;
 
 // App routes for better navigation
 class AppRoutes {
@@ -39,6 +46,11 @@ void main() async {
   // Initialize dotenv
   await dotenv.load(fileName: ".env");
 
+  // Use path-based routing for web
+  if (kIsWeb) {
+    usePathUrlStrategy();
+  }
+
   // Run the app
   runApp(const MyApp());
 }
@@ -54,15 +66,64 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system, // Respect system theme
-      home: const HomePage(),
+      home: Helmet(
+        title: "Heart Beats - Romantic Compatibility & Fun",
+        description:
+            "Discover your romantic compatibility, generate love letters, explore zodiac matches, and enjoy fun relationship tools with Heart Beats.",
+        child: const HomePage(),
+      ),
       routes: {
-        AppRoutes.loveCalculator: (context) => const LoveCalculatorScreen(),
-        AppRoutes.intensityCalculator: (context) => const SexIntensityScreen(),
-        AppRoutes.compatibility: (context) => const ZodicScreen(),
-        AppRoutes.quotes: (context) => RomanticQuotesPage(),
-        AppRoutes.nameMatch: (context) => const NameCompatibilityPage(),
-        AppRoutes.loveLetter: (context) => const LoveLetterGeneratorPage(),
-        AppRoutes.relationshipTimer: (context) => RelationshipTimerPage(),
+        AppRoutes.loveCalculator: (context) => Helmet(
+              title: "Love Calculator - Check Your Compatibility | Heart Beats",
+              description:
+                  "Find out your love compatibility score with our fun Love Calculator. Enter names and see your match!",
+              child: DeferredScreenLoader(
+                loadLibraryFuture: love_calculator_lib.loadLibrary(),
+                screenBuilder: (context) => love_calculator_lib.LoveCalculatorScreen(),
+              ),
+            ),
+        AppRoutes.intensityCalculator: (context) => Helmet(
+              title:
+                  "Intensity Calculator - Measure Your Passion | Heart Beats",
+              description:
+                  "Measure your passion intensity with our unique Intensity Calculator. Discover a new dimension of your connection!",
+              child: const SexIntensityScreen(),
+            ),
+        AppRoutes.compatibility: (context) => Helmet(
+              title: "Zodiac Compatibility - Find Your Star Sign Match | Heart Beats",
+              description:
+                  "Explore zodiac sign compatibility for love and relationships. See how well your star signs align with Heart Beats.",
+              child: const ZodicScreen(),
+            ),
+        AppRoutes.quotes: (context) => Helmet(
+              title: "Romantic Quotes - Inspire Your Love | Heart Beats",
+              description:
+                  "Find the perfect romantic quotes to express your feelings or add a touch of love to your day. Updated daily!",
+              child: DeferredScreenLoader(
+                loadLibraryFuture: quotes_lib.loadLibrary(),
+                screenBuilder: (context) => quotes_lib.RomanticQuotesPage(),
+              ),
+            ),
+        AppRoutes.nameMatch: (context) => Helmet(
+              title: "Name Match - Check Name Compatibility | Heart Beats",
+              description:
+                  "Discover the compatibility between two names with our Name Match tool. A fun way to see if names are a good fit!",
+              child: const NameCompatibilityPage(),
+            ),
+        AppRoutes.loveLetter: (context) => Helmet(
+              title:
+                  "AI Love Letter Generator - Create Romantic Letters | Heart Beats",
+              description:
+                  "Generate unique and heartfelt love letters with our AI-powered Love Letter Generator. Perfect for expressing your feelings.",
+              child: const LoveLetterGeneratorPage(),
+            ),
+        AppRoutes.relationshipTimer: (context) => Helmet(
+              title:
+                  "Relationship Timer - Track Your Love Journey | Heart Beats",
+              description:
+                  "Track the duration of your relationship and celebrate milestones with our Relationship Timer. Never miss an anniversary!",
+              child: RelationshipTimerPage(),
+            ),
       },
     );
   }

@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:heart_beat/theam.dart';
+// Note: I'm assuming 'package:heart_beat/theam.dart' is still a valid import.
+// If 'AppTheme' or other specific theme elements are needed, 
+// they might need to be passed in or accessed differently if 'theam.dart' itself has dependencies
+// that we don't want in this deferred library. For now, keeping it simple.
+// If AppTheme is complex or not needed directly by LoveCalculatorScreen, this import might be removable
+// or refactorable.
+// import 'package:heart_beat/theam.dart'; // Commenting out for now, will add back if needed after checking theme usage
 
 class LoveCalculatorScreen extends StatefulWidget {
   const LoveCalculatorScreen({super.key});
@@ -48,15 +54,24 @@ class _LoveCalculatorScreenState extends State<LoveCalculatorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Accessing theme data directly from Theme.of(context)
+    // This avoids a direct dependency on a potentially complex 'theam.dart' file
+    // within this deferred library, which is good practice for deferred loading.
+    final ThemeData theme = Theme.of(context);
+
     return Scaffold(
+      // appBar: AppBar( // Optional: Add an AppBar if desired for deferred screens
+      //   title: Text('Love Calculator'),
+      //   backgroundColor: theme.colorScheme.primaryContainer,
+      // ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Theme.of(context).colorScheme.primaryContainer,
-              Theme.of(context).colorScheme.secondaryContainer,
+              theme.colorScheme.primaryContainer,
+              theme.colorScheme.secondaryContainer,
             ],
           ),
         ),
@@ -71,39 +86,39 @@ class _LoveCalculatorScreenState extends State<LoveCalculatorScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.favorite,
-                        color: Theme.of(context).colorScheme.primary, size: 40),
+                        color: theme.colorScheme.primary, size: 40),
                     SizedBox(width: 10),
                     Text(
                       'Love Calculator',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      style: theme.textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.primary,
+                            color: theme.colorScheme.primary,
                             shadows: [
                               Shadow(
-                                color: Theme.of(context).colorScheme.secondary,
+                                color: theme.colorScheme.secondary.withOpacity(0.5), // Adjusted opacity
                                 offset: Offset(2, 2),
-                                blurRadius: 5,
+                                blurRadius: 3, // Adjusted blur
                               ),
                             ],
                           ),
                     ),
                     SizedBox(width: 10),
                     Icon(Icons.favorite,
-                        color: Theme.of(context).colorScheme.primary, size: 40),
+                        color: theme.colorScheme.primary, size: 40),
                   ],
                 ),
                 SizedBox(height: 40),
 
                 // Input Fields
                 Container(
-                  width: 400,
+                  width: 400, // Consider making this responsive
                   padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
+                    color: theme.colorScheme.surface.withOpacity(0.9),
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+                        color: theme.colorScheme.secondary.withOpacity(0.3),
                         spreadRadius: 5,
                         blurRadius: 7,
                       ),
@@ -116,18 +131,18 @@ class _LoveCalculatorScreenState extends State<LoveCalculatorScreen> {
                         decoration: InputDecoration(
                           labelText: 'Your Name, Sweetheart',
                           labelStyle: TextStyle(
-                              color: Theme.of(context).colorScheme.primary),
+                              color: theme.colorScheme.primary),
                           prefixIcon: Icon(Icons.person,
-                              color: Theme.of(context).colorScheme.secondary),
+                              color: theme.colorScheme.secondary),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15),
                             borderSide: BorderSide(
-                                color: Theme.of(context).colorScheme.secondary),
+                                color: theme.colorScheme.secondary),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15),
                             borderSide: BorderSide(
-                                color: Theme.of(context).colorScheme.primary),
+                                color: theme.colorScheme.primary),
                           ),
                         ),
                       ),
@@ -137,18 +152,18 @@ class _LoveCalculatorScreenState extends State<LoveCalculatorScreen> {
                         decoration: InputDecoration(
                           labelText: "Your Lover's Name",
                           labelStyle: TextStyle(
-                              color: Theme.of(context).colorScheme.primary),
+                              color: theme.colorScheme.primary),
                           prefixIcon: Icon(Icons.favorite,
-                              color: Theme.of(context).colorScheme.secondary),
+                              color: theme.colorScheme.secondary),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20),
                             borderSide: BorderSide(
-                                color: Theme.of(context).colorScheme.secondary),
+                                color: theme.colorScheme.secondary),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20),
                             borderSide: BorderSide(
-                                color: Theme.of(context).colorScheme.primary),
+                                color: theme.colorScheme.primary),
                           ),
                         ),
                       ),
@@ -158,7 +173,7 @@ class _LoveCalculatorScreenState extends State<LoveCalculatorScreen> {
                       ElevatedButton(
                         onPressed: _calculateLove,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          backgroundColor: theme.colorScheme.primary,
                           padding: EdgeInsets.symmetric(
                             horizontal: 40,
                             vertical: 15,
@@ -171,7 +186,7 @@ class _LoveCalculatorScreenState extends State<LoveCalculatorScreen> {
                           'Calculate Our Love',
                           style: TextStyle(
                               fontSize: 18,
-                              color: Theme.of(context).colorScheme.onPrimary),
+                              color: theme.colorScheme.onPrimary),
                         ),
                       ),
                     ],
@@ -186,8 +201,8 @@ class _LoveCalculatorScreenState extends State<LoveCalculatorScreen> {
                       children: [
                         Text(
                           'Love Score',
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                color: Theme.of(context).colorScheme.primary,
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                                color: theme.colorScheme.primary,
                                 fontWeight: FontWeight.bold,
                               ),
                         ),
@@ -195,13 +210,13 @@ class _LoveCalculatorScreenState extends State<LoveCalculatorScreen> {
                         Container(
                           padding: EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
+                            color: theme.colorScheme.surface.withOpacity(0.9),
                             borderRadius: BorderRadius.circular(15),
                           ),
                           child: Text(
                             _result,
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
+                            style: theme.textTheme.titleLarge?.copyWith(
+                                  color: theme.colorScheme.primary,
                                   fontStyle: FontStyle.italic,
                                 ),
                             textAlign: TextAlign.center,
@@ -210,12 +225,12 @@ class _LoveCalculatorScreenState extends State<LoveCalculatorScreen> {
                         SizedBox(height: 20),
                         // Love Percentage Bar
                         SizedBox(
-                          width: 300,
+                          width: 300, // Consider making this responsive
                           child: LinearProgressIndicator(
                             value: _lovePercentage / 100,
-                            backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+                            backgroundColor: theme.colorScheme.secondaryContainer,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              Theme.of(context).colorScheme.primary,
+                              theme.colorScheme.primary,
                             ),
                             minHeight: 10,
                           ),

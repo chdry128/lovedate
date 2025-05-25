@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:heart_beat/theam.dart';
+// import 'package:heart_beat/theam.dart'; // Removed, will use Theme.of(context)
 
 class RomanticQuotesPage extends StatefulWidget {
   const RomanticQuotesPage({super.key});
@@ -19,6 +19,7 @@ class _RomanticQuotesPageState extends State<RomanticQuotesPage> {
 
   Future<void> copyToClipboard() async {
     await Clipboard.setData(ClipboardData(text: quote));
+    if (!mounted) return; // Check if the widget is still in the tree
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Quote copied to clipboard!')));
@@ -41,7 +42,6 @@ class _RomanticQuotesPageState extends State<RomanticQuotesPage> {
         return;
       }
 
-      // Updated headers and request body format
       var response = await http.post(
         Uri.parse(url),
         headers: {
@@ -64,43 +64,52 @@ class _RomanticQuotesPageState extends State<RomanticQuotesPage> {
         }),
       );
 
-      print("Response Status Code: ${response.statusCode}");
-      print("Response Body: ${response.body}");
+      // print("Response Status Code: ${response.statusCode}"); // For debugging
+      // print("Response Body: ${response.body}"); // For debugging
 
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
-        setState(() {
-          quote =
-          data['choices'][0]['message']['content']; // Adjust based on actual API response
-        });
+        if (mounted) {
+          setState(() {
+            quote =
+            data['choices'][0]['message']['content']; 
+          });
+        }
       } else {
-        setState(() {
-          quote =
-          "Failed to generate a quote. Error Code: ${response.statusCode}";
-        });
+        if (mounted) {
+          setState(() {
+            quote =
+            "Failed to generate a quote. Error Code: ${response.statusCode}";
+          });
+        }
       }
     } catch (e) {
-      setState(() {
-        quote = "Error: $e";
-      });
-      print("Error: $e");
+      if (mounted) {
+        setState(() {
+          quote = "Error: $e";
+        });
+      }
+      // print("Error: $e"); // For debugging
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context); // Using Theme.of(context)
+
     return Scaffold(
-      // backgroundColor: Colors.pink[50], // Removed hardcoded color
       appBar: AppBar(
         title: Text(
           "Love & Desire Quotes",
           // style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold), // Use AppBar theme
         ),
-        // backgroundColor: Colors.redAccent, // Use AppBar theme
+        // backgroundColor: Colors.redAccent, // Use AppBar theme from main.dart
         elevation: 0,
       ),
       body: Padding(
@@ -111,6 +120,8 @@ class _RomanticQuotesPageState extends State<RomanticQuotesPage> {
             DropdownButton<String>(
               value: selectedCategory,
               isExpanded: true,
+              dropdownColor: theme.cardColor, // Use theme color for dropdown
+              style: theme.textTheme.titleMedium, // Use theme text style
               onChanged: (String? newValue) {
                 if (newValue != null) {
                   setState(() {
@@ -132,12 +143,18 @@ class _RomanticQuotesPageState extends State<RomanticQuotesPage> {
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration( // Added a subtle border and background
+                  color: theme.colorScheme.surface.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: theme.colorScheme.outline.withOpacity(0.3))
+                ),
                 child: Center(
                   child: SingleChildScrollView(
                     child: Text(
                       quote,
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      style: theme.textTheme.headlineSmall?.copyWith(
                             fontStyle: FontStyle.italic,
+                            color: theme.colorScheme.onSurface, // Use theme color
                           ),
                       textAlign: TextAlign.center,
                     ),
@@ -148,17 +165,28 @@ class _RomanticQuotesPageState extends State<RomanticQuotesPage> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: isLoading ? null : generateQuote,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                textStyle: TextStyle(fontSize: 16)
+              ),
               child: isLoading
-                  ? CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          Theme.of(context).colorScheme.primary),
+                  ? SizedBox( // Constrained CircularProgressIndicator
+                      width: 24, 
+                      height: 24, 
+                      child: CircularProgressIndicator(
+                        strokeWidth: 3,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                            theme.colorScheme.onPrimary), // Ensure visibility on button
+                      )
                     )
                   : const Text("Generate Quote"),
             ),
             IconButton(
               onPressed: copyToClipboard,
               icon: Icon(Icons.copy,
-                  color: Theme.of(context).colorScheme.primary),
+                  color: theme.colorScheme.primary),
               tooltip: "Copy Quote",
             ),
           ],
