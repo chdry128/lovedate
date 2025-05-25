@@ -27,6 +27,7 @@ dependencies:
   # Networking
   dio: ^5.3.3
   http: ^1.2.1
+  connectivity_plus: ^5.0.2
   
   # Utilities
   intl: ^0.18.1

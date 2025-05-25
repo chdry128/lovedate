@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:heart_beat/question_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'dateCalc.dart';
-import 'game_screen.dart';
+import 'love_letter_generator.dart';
 import 'name.dart';
 import 'zodicMatch.dart';
 import 'quoteGen.dart';
 import 'loveCalc.dart';
 import 'package:heart_beat/IntenCalc.dart';
-import 'question_repo.dart';
 import 'theam.dart';
 
 // App routes for better navigation
@@ -22,8 +18,7 @@ class AppRoutes {
   static const String compatibility = '/compatibility';
   static const String quotes = '/quotes';
   static const String nameMatch = '/name-match';
-  static const String loveGame = '/love-game';
-  static const String relationshipTimer = '/relationship-timer';
+  static const String loveLetter = '/love-letter';
 }
 
 void main() async {
@@ -37,9 +32,6 @@ void main() async {
 
   // Initialize Hive for local storage
   await Hive.initFlutter();
-  await Hive.openBox('wyrQuestions');
-  Hive.registerAdapter(QuestionIntensityAdapter());
-  Hive.registerAdapter(WYRQuestionAdapter());
 
   // Run the app
   runApp(const MyApp());
@@ -50,30 +42,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider<QuestionRepository>(create: (_) => QuestionRepository()),
-        // Add more providers if needed
-      ],
-      child: MaterialApp(
-        title: 'Heart Beats',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system, // Respect system theme
-        home: const HomePage(),
-        routes: {
-          AppRoutes.loveCalculator: (context) => const LoveCalculatorApp(),
-          AppRoutes.intensityCalculator: (context) => const SexIntensityApp(),
-          AppRoutes.compatibility: (context) => const ZodicApp(),
-          AppRoutes.quotes: (context) => RomanticQuotesPage(),
-          AppRoutes.nameMatch: (context) => const NameCompatibilityPage(),
-          AppRoutes.loveGame:
-              (context) =>
-                  GameScreen(intensityFilter: QuestionIntensity.flirty),
-          AppRoutes.relationshipTimer: (context) => RelationshipTimerPage(),
-        },
-      ),
+    return MaterialApp(
+      title: 'Heart Beats',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system, // Respect system theme
+      home: const HomePage(),
+      routes: {
+        AppRoutes.loveCalculator: (context) => const LoveCalculatorApp(),
+        AppRoutes.intensityCalculator: (context) => const SexIntensityApp(),
+        AppRoutes.compatibility: (context) => const ZodicApp(),
+        AppRoutes.quotes: (context) => RomanticQuotesPage(),
+        AppRoutes.nameMatch: (context) => const NameCompatibilityPage(),
+        AppRoutes.loveLetter: (context) => const LoveLetterGeneratorPage(),
+      },
     );
   }
 }
@@ -187,29 +170,16 @@ class HomePage extends StatelessWidget {
                       ),
                       _buildCalculatorCard(
                         context,
-                        title: "Love Game",
-                        icon: Icons.games_outlined,
-                        description: "Fun game for couples",
+                        title: "Love Letter Generator",
+                        icon: Icons.mail_outline,
+                        description: "Create heartfelt love letters",
                         onPressed:
                             () => Navigator.pushNamed(
                               context,
-                              AppRoutes.loveGame,
-                            ),
-                        color: Colors.deepPurpleAccent,
-                        semanticLabel: "Open Love Game",
-                      ),
-                      _buildCalculatorCard(
-                        context,
-                        title: "Relationship Timer",
-                        icon: Icons.timer_outlined,
-                        description: "Track your love journey",
-                        onPressed:
-                            () => Navigator.pushNamed(
-                              context,
-                              AppRoutes.relationshipTimer,
+                              AppRoutes.loveLetter,
                             ),
                         color: Colors.blueAccent,
-                        semanticLabel: "Open Relationship Timer",
+                        semanticLabel: "Open Love Letter Generator",
                       ),
                     ],
                   ),

@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:confetti/confetti.dart';
+import 'dart:math';
 import 'theam.dart';
+import 'models/zodiac_model.dart';
+import 'services/astrology_service.dart';
+import 'services/location_service.dart';
+import 'widgets/zodiac_widgets.dart';
+import 'widgets/compatibility_details.dart';
+import 'widgets/cosmic_background.dart';
 
 void main() {
-  runApp(ZodicApp());
+  runApp(const ZodicApp());
 }
 
 class ZodicApp extends StatelessWidget {
@@ -11,9 +20,9 @@ class ZodicApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Zodic Page',
+      title: 'Cosmic Connection',
       theme: AppTheme.lightTheme,
-      home: ZodicScreen(),
+      home: const ZodicScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -26,374 +35,536 @@ class ZodicScreen extends StatefulWidget {
   _ZodicScreenState createState() => _ZodicScreenState();
 }
 
-class _ZodicScreenState extends State<ZodicScreen> {
+class _ZodicScreenState extends State<ZodicScreen>
+    with SingleTickerProviderStateMixin {
   final _nameController1 = TextEditingController();
   final _nameController2 = TextEditingController();
-  DateTime? _selectedDate1;
-  DateTime? _selectedDate2;
-  String _zodiacSign1 = '';
-  String _zodiacSign2 = '';
-  String _compatibilityResult = '';
-  bool _showCompatibility = false;
+  final _confettiController = ConfettiController(
+    duration: const Duration(seconds: 3),
+  );
 
-  // Function to get zodiac sign based on date
-  String _getZodiacSign(DateTime date) {
-    int day = date.day;
-    int month = date.month;
+  late TabController _tabController;
 
-    if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) {
-      return 'Aries';
-    } else if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) {
-      return 'Taurus';
-    } else if ((month == 5 && day >= 21) || (month == 6 && day <= 20)) {
-      return 'Gemini';
-    } else if ((month == 6 && day >= 21) || (month == 7 && day <= 22)) {
-      return 'Cancer';
-    } else if ((month == 7 && day >= 23) || (month == 8 && day <= 22)) {
-      return 'Leo';
-    } else if ((month == 8 && day >= 23) || (month == 9 && day <= 22)) {
-      return 'Virgo';
-    } else if ((month == 9 && day >= 23) || (month == 10 && day <= 22)) {
-      return 'Libra';
-    } else if ((month == 10 && day >= 23) || (month == 11 && day <= 21)) {
-      return 'Scorpio';
-    } else if ((month == 11 && day >= 22) || (month == 12 && day <= 21)) {
-      return 'Sagittarius';
-    } else if ((month == 12 && day >= 22) || (month == 1 && day <= 19)) {
-      return 'Capricorn';
-    } else if ((month == 1 && day >= 20) || (month == 2 && day <= 18)) {
-      return 'Aquarius';
-    } else {
-      return 'Pisces';
-    }
+  DateTime? _birthDateTime1;
+  DateTime? _birthDateTime2;
+
+  String _city1 = "", _country1 = "";
+  String _city2 = "", _country2 = "";
+
+  String _sunSign1 = '', _moonSign1 = '', _risingSign1 = '';
+  String _sunSign2 = '', _moonSign2 = '', _risingSign2 = '';
+
+  CompatibilityResult? _compatibilityResult;
+  bool _isCalculating = false;
+  bool _showResult = false;
+
+  int _expandedCardIndex = -1;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+
+    // Set default values for testing
+    _nameController1.text = "Alex";
+    _nameController2.text = "Jordan";
+    _birthDateTime1 = DateTime(1990, 5, 15, 8, 30);
+    _birthDateTime2 = DateTime(1992, 9, 22, 14, 45);
+    _city1 = "New York";
+    _country1 = "USA";
+    _city2 = "London";
+    _country2 = "UK";
   }
 
-  // Function to calculate compatibility between two signs
-  String _calculateCompatibility(String sign1, String sign2) {
-    // Compatibility matrix based on astrological elements
-    Map<String, List<String>> compatibilityMap = {
-      'Aries': ['Leo', 'Sagittarius', 'Gemini', 'Aquarius'],
-      'Taurus': ['Virgo', 'Capricorn', 'Cancer', 'Pisces'],
-      'Gemini': ['Libra', 'Aquarius', 'Aries', 'Leo'],
-      'Cancer': ['Scorpio', 'Pisces', 'Taurus', 'Virgo'],
-      'Leo': ['Aries', 'Sagittarius', 'Gemini', 'Libra'],
-      'Virgo': ['Taurus', 'Capricorn', 'Cancer', 'Scorpio'],
-      'Libra': ['Gemini', 'Aquarius', 'Leo', 'Sagittarius'],
-      'Scorpio': ['Cancer', 'Pisces', 'Virgo', 'Capricorn'],
-      'Sagittarius': ['Aries', 'Leo', 'Libra', 'Aquarius'],
-      'Capricorn': ['Taurus', 'Virgo', 'Scorpio', 'Pisces'],
-      'Aquarius': ['Gemini', 'Libra', 'Aries', 'Sagittarius'],
-      'Pisces': ['Cancer', 'Scorpio', 'Taurus', 'Capricorn'],
-    };
-
-    if (sign1 == sign2) {
-      return "You're both ${sign1}s! This creates a strong understanding but may lack balance.";
-    } else if (compatibilityMap[sign1]!.contains(sign2)) {
-      return "Great match! $sign1 and $sign2 are highly compatible signs.";
-    } else {
-      return "Interesting pairing! $sign1 and $sign2 can learn from each other but may need to work on understanding differences.";
-    }
-  }
-
-  Future<void> _selectDate(BuildContext context, bool isFirstPerson) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isFirstPerson) {
-          _selectedDate1 = picked;
-          _zodiacSign1 = _getZodiacSign(picked);
-        } else {
-          _selectedDate2 = picked;
-          _zodiacSign2 = _getZodiacSign(picked);
-        }
-      });
-    }
-  }
-
-  void _calculateCompatibilityResult() {
-    if (_selectedDate1 == null || _selectedDate2 == null) {
-      setState(() {
-        _compatibilityResult = 'Please select both birth dates!';
-        _showCompatibility = true;
-      });
-      return;
-    }
-
-    if (_nameController1.text.isEmpty || _nameController2.text.isEmpty) {
-      setState(() {
-        _compatibilityResult = 'Please enter both names!';
-        _showCompatibility = true;
-      });
+  void _calculateCompatibility() {
+    if (_nameController1.text.isEmpty ||
+        _nameController2.text.isEmpty ||
+        _birthDateTime1 == null ||
+        _birthDateTime2 == null ||
+        _city1.isEmpty ||
+        _country1.isEmpty ||
+        _city2.isEmpty ||
+        _country2.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please fill in all details for both persons."),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
       return;
     }
 
     setState(() {
-      _compatibilityResult = _calculateCompatibility(_zodiacSign1, _zodiacSign2);
-      _showCompatibility = true;
+      _isCalculating = true;
+    });
+
+    // Simulate API call with a delay
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      // Step 1: Calculate Signs
+      _sunSign1 = ZodiacData.getSunSign(
+        _birthDateTime1!.day,
+        _birthDateTime1!.month,
+      );
+      _sunSign2 = ZodiacData.getSunSign(
+        _birthDateTime2!.day,
+        _birthDateTime2!.month,
+      );
+
+      _moonSign1 = AstrologyService.getMoonSign(_birthDateTime1!);
+      _moonSign2 = AstrologyService.getMoonSign(_birthDateTime2!);
+
+      // Get coordinates for rising sign calculation
+      final coords1 = LocationService.getCoordinates(_city1, _country1);
+      final coords2 = LocationService.getCoordinates(_city2, _country2);
+
+      _risingSign1 = AstrologyService.getRisingSign(
+        _birthDateTime1!,
+        coords1['latitude']!,
+        coords1['longitude']!,
+      );
+
+      _risingSign2 = AstrologyService.getRisingSign(
+        _birthDateTime2!,
+        coords2['latitude']!,
+        coords2['longitude']!,
+      );
+
+      // Step 2: Calculate Compatibility
+      _compatibilityResult = ZodiacData.calculateCompatibility(
+        _sunSign1,
+        _sunSign2,
+      );
+
+      setState(() {
+        _isCalculating = false;
+        _showResult = true;
+      });
+
+      // Play confetti if score is high
+      if (_compatibilityResult!.score >= 70) {
+        _confettiController.play();
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.deepPurple[100]!, Colors.red[300]!],
+      body: Stack(
+        children: [
+          // Cosmic Background
+          CosmicBackground(
+            color1: Colors.deepPurple.shade900,
+            color2: Colors.purple.shade800,
+            color3: Colors.indigo.shade900,
           ),
-        ),
-        child: Center(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.all(20),
+
+          // Content
+          SafeArea(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Header
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.star, color: Colors.yellow[700], size: 40),
-                    SizedBox(width: 10),
-                    Text(
-                      'Zodiac Compatibility',
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple[900],
-                        shadows: [
-                          Shadow(
-                            color: Colors.redAccent,
-                            offset: Offset(2, 2),
-                            blurRadius: 5,
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(width: 5),
-                    Icon(Icons.star, color: Colors.yellow[700], size: 40),
-                  ],
-                ),
-                SizedBox(height: 40),
-
-                // Input Container
-                Container(
-                  width: 400,
-                  padding: EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.redAccent.withOpacity(0.4),
-                        spreadRadius: 5,
-                        blurRadius: 7,
-                      ),
-                    ],
-                  ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                   child: Column(
                     children: [
-                      // Person 1 Input
                       Text(
-                        'Your Details',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.pink[800],
-                        ),
-                      ),
-                      SizedBox(height: 15),
-                      TextField(
-                        controller: _nameController1,
-                        decoration: InputDecoration(
-                          labelText: 'Your Name',
-                          labelStyle: TextStyle(color: Colors.pink[700]),
-                          prefixIcon: Icon(
-                            Icons.person,
-                            color: Colors.redAccent,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            borderSide: BorderSide(color: Colors.redAccent),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            borderSide: BorderSide(color: Colors.pink),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 15),
-                      ElevatedButton(
-                        onPressed: () => _selectDate(context, true),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepPurple[400],
-                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
-                        child: Text(
-                          _selectedDate1 == null
-                              ? 'Select Your Birth Date'
-                              : 'Birth Date: ${_selectedDate1!.day}/${_selectedDate1!.month}/${_selectedDate1!.year}',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                      if (_zodiacSign1.isNotEmpty)
-                        Padding(
-                          padding: EdgeInsets.only(top: 10),
-                          child: Text(
-                            'Your Sign: $_zodiacSign1',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.red[800],
-                              fontWeight: FontWeight.bold,
+                            "Cosmic Connection",
+                            style: AppTheme.titleStyle.copyWith(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
                             ),
-                          ),
-                        ),
-                      SizedBox(height: 30),
-
-                      // Person 2 Input
+                          )
+                          .animate()
+                          .fadeIn(duration: 600.ms)
+                          .slideY(begin: -0.2, end: 0),
+                      const SizedBox(height: 8),
                       Text(
-                        'Your Partner\'s Details',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.pink[800],
+                        "Discover your zodiac compatibility",
+                        style: AppTheme.subtitleStyle.copyWith(
+                          fontSize: 16,
+                          color: Colors.white.withOpacity(0.8),
                         ),
-                      ),
-                      SizedBox(height: 15),
-                      TextField(
-                        controller: _nameController2,
-                        decoration: InputDecoration(
-                          labelText: 'Partner\'s Name',
-                          labelStyle: TextStyle(color: Colors.pink[700]),
-                          prefixIcon: Icon(
-                            Icons.favorite,
-                            color: Colors.redAccent,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            borderSide: BorderSide(color: Colors.redAccent),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            borderSide: BorderSide(color: Colors.deepPurple),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 15),
-                      ElevatedButton(
-                        onPressed: () => _selectDate(context, false),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepPurple[400],
-                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
-                        child: Text(
-                          _selectedDate2 == null
-                              ? 'Select Partner\'s Birth Date'
-                              : 'Birth Date: ${_selectedDate2!.day}/${_selectedDate2!.month}/${_selectedDate2!.year}',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                      if (_zodiacSign2.isNotEmpty)
-                        Padding(
-                          padding: EdgeInsets.only(top: 10),
-                          child: Text(
-                            'Partner\'s Sign: $_zodiacSign2',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.red[800],
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      SizedBox(height: 30),
-
-                      // Calculate Button
-                      ElevatedButton(
-                        onPressed: _calculateCompatibilityResult,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.redAccent,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 40,
-                            vertical: 15,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        child: Text(
-                          'Check Compatibility',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
+                      ).animate().fadeIn(duration: 800.ms, delay: 200.ms),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
 
-                // Result Display
-                if (_showCompatibility)
-                  Padding(
-                    padding: EdgeInsets.only(top: 30),
-                    child: Container(
-                      width: 400,
-                      padding: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(15),
+                // Main Content
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
                       ),
-                      child: Column(
-                        children: [
-                          Text(
-                            'Compatibility Result',
-                            style: TextStyle(
-                              fontSize: 24,
-                              color: Colors.deepPurple[900],
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 15),
-                          if (_zodiacSign1.isNotEmpty && _zodiacSign2.isNotEmpty)
-                            Text(
-                              '$_zodiacSign1 & $_zodiacSign2',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.red[800],
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          SizedBox(height: 15),
-                          Text(
-                            _compatibilityResult,
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.deepPurple[800],
-                              fontStyle: FontStyle.italic,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, -2),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
                       ),
+                      child:
+                          _showResult ? _buildResultView() : _buildInputView(),
                     ),
                   ),
+                ),
               ],
             ),
           ),
+
+          // Confetti
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConfettiWidget(
+              confettiController: _confettiController,
+              blastDirection: pi / 2,
+              maxBlastForce: 5,
+              minBlastForce: 1,
+              emissionFrequency: 0.05,
+              numberOfParticles: 20,
+              gravity: 0.1,
+              colors: const [
+                Colors.pink,
+                Colors.purple,
+                Colors.blue,
+                Colors.red,
+                Colors.orange,
+                Colors.yellow,
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInputView() {
+    return Column(
+      children: [
+        // Tabs
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: TabBar(
+            controller: _tabController,
+            labelColor: Theme.of(context).colorScheme.primary,
+            unselectedLabelColor: Colors.grey,
+            indicatorColor: Theme.of(context).colorScheme.primary,
+            indicatorWeight: 3,
+            tabs: const [
+              Tab(icon: Icon(Icons.person), text: "Person 1"),
+              Tab(icon: Icon(Icons.favorite), text: "Person 2"),
+            ],
+          ),
         ),
+
+        // Tab content
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              // Person 1 Form
+              SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: _nameController1,
+                      decoration: const InputDecoration(
+                        labelText: "Name",
+                        prefixIcon: Icon(Icons.person_outline),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    DateTimeInput(
+                      label: "Birth Date & Time",
+                      value: _birthDateTime1,
+                      onChanged: (dateTime) {
+                        setState(() {
+                          _birthDateTime1 = dateTime;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    LocationInput(
+                      label: "Birth Location",
+                      city: _city1,
+                      country: _country1,
+                      onChanged: (city, country) {
+                        setState(() {
+                          _city1 = city;
+                          _country1 = country;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 40),
+                    Center(
+                      child: GradientButton(
+                        text: "Next",
+                        onPressed: () {
+                          _tabController.animateTo(1);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Person 2 Form
+              SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: _nameController2,
+                      decoration: const InputDecoration(
+                        labelText: "Name",
+                        prefixIcon: Icon(Icons.person_outline),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    DateTimeInput(
+                      label: "Birth Date & Time",
+                      value: _birthDateTime2,
+                      onChanged: (dateTime) {
+                        setState(() {
+                          _birthDateTime2 = dateTime;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    LocationInput(
+                      label: "Birth Location",
+                      city: _city2,
+                      country: _country2,
+                      onChanged: (city, country) {
+                        setState(() {
+                          _city2 = city;
+                          _country2 = country;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 40),
+                    Center(
+                      child: GradientButton(
+                        text: "Calculate Compatibility",
+                        isLoading: _isCalculating,
+                        onPressed: _calculateCompatibility,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildResultView() {
+    if (_compatibilityResult == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          // Header with back button
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back_ios),
+                onPressed: () {
+                  setState(() {
+                    _showResult = false;
+                    _expandedCardIndex = -1;
+                  });
+                },
+              ),
+              const Expanded(
+                child: Text(
+                  "Your Compatibility Results",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(width: 48), // Balance the back button
+            ],
+          ),
+          const SizedBox(height: 20),
+
+          // Compatibility Result Card
+          CompatibilityResultCard(result: _compatibilityResult!),
+
+          // Person 1 Details
+          const SizedBox(height: 20),
+          const Text(
+            "Astrological Profile",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+
+          ZodiacCard(
+            sign: _sunSign1,
+            personName: "${_nameController1.text}'s Sun Sign",
+            isExpanded: _expandedCardIndex == 0,
+            onTap: () {
+              setState(() {
+                _expandedCardIndex = _expandedCardIndex == 0 ? -1 : 0;
+              });
+            },
+          ),
+
+          ZodiacCard(
+            sign: _moonSign1,
+            personName: "${_nameController1.text}'s Moon Sign",
+            isExpanded: _expandedCardIndex == 1,
+            onTap: () {
+              setState(() {
+                _expandedCardIndex = _expandedCardIndex == 1 ? -1 : 1;
+              });
+            },
+          ),
+
+          ZodiacCard(
+            sign: _risingSign1,
+            personName: "${_nameController1.text}'s Rising Sign",
+            isExpanded: _expandedCardIndex == 2,
+            onTap: () {
+              setState(() {
+                _expandedCardIndex = _expandedCardIndex == 2 ? -1 : 2;
+              });
+            },
+          ),
+
+          const SizedBox(height: 20),
+
+          // Person 2 Details
+          ZodiacCard(
+            sign: _sunSign2,
+            personName: "${_nameController2.text}'s Sun Sign",
+            isExpanded: _expandedCardIndex == 3,
+            onTap: () {
+              setState(() {
+                _expandedCardIndex = _expandedCardIndex == 3 ? -1 : 3;
+              });
+            },
+          ),
+
+          ZodiacCard(
+            sign: _moonSign2,
+            personName: "${_nameController2.text}'s Moon Sign",
+            isExpanded: _expandedCardIndex == 4,
+            onTap: () {
+              setState(() {
+                _expandedCardIndex = _expandedCardIndex == 4 ? -1 : 4;
+              });
+            },
+          ),
+
+          ZodiacCard(
+            sign: _risingSign2,
+            personName: "${_nameController2.text}'s Rising Sign",
+            isExpanded: _expandedCardIndex == 5,
+            onTap: () {
+              setState(() {
+                _expandedCardIndex = _expandedCardIndex == 5 ? -1 : 5;
+              });
+            },
+          ),
+
+          const SizedBox(height: 30),
+
+          // Detailed Compatibility Analysis
+          CompatibilityDetails(
+            sign1: _sunSign1,
+            sign2: _sunSign2,
+            person1: _nameController1.text,
+            person2: _nameController2.text,
+          ),
+
+          const SizedBox(height: 30),
+
+          // Calculate Again Button
+          GradientButton(
+            text: "Calculate Again",
+            onPressed: () {
+              setState(() {
+                _showResult = false;
+                _expandedCardIndex = -1;
+              });
+            },
+          ),
+
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInsightItem(
+    String title,
+    String description,
+    IconData icon,
+    Color color,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  description,
+                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -402,6 +573,8 @@ class _ZodicScreenState extends State<ZodicScreen> {
   void dispose() {
     _nameController1.dispose();
     _nameController2.dispose();
+    _tabController.dispose();
+    _confettiController.dispose();
     super.dispose();
   }
 }
