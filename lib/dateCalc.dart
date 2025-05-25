@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
-import 'dart:math';
+// import 'dart:math'; // Redundant, min is also in flutter_animate
 import 'package:confetti/confetti.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'dart:math'; // Keep for Random
 
 class RelationshipTimerPage extends StatefulWidget {
   const RelationshipTimerPage({super.key});
@@ -39,8 +40,8 @@ class _RelationshipTimerPageState extends State<RelationshipTimerPage>
   bool _isLoading = true;
 
   // API
-  final String nvidiaApiUrl =
-      "https://api.nvidia.com/love-quotes "; // Replace with actual API
+  // final String nvidiaApiUrl =
+  //     "https://api.nvidia.com/love-quotes "; // Unused variable
 
   @override
   void initState() {

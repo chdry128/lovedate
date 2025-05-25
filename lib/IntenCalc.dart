@@ -1,29 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-
-void main() {
-  runApp(SexIntensityApp());
-}
-
-class SexIntensityApp extends StatelessWidget {
-  const SexIntensityApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Sex Intensity Calculator',
-      theme: ThemeData(
-        primaryColor: Colors.deepPurple,
-        scaffoldBackgroundColor: Colors.purple[50],
-        textTheme: TextTheme(
-          bodyMedium: TextStyle(color: Colors.deepPurple[900]),
-        ),
-      ),
-      home: SexIntensityScreen(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
+import 'package:heart_beat/theam.dart'; // Import AppTheme
 
 class SexIntensityScreen extends StatefulWidget {
   const SexIntensityScreen({super.key});
@@ -77,9 +54,9 @@ class _SexIntensityScreenState extends State<SexIntensityScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Colors.deepPurple[100]!,
-              Colors.red[300]!,
+            colors: [ // Use theme colors for gradient
+              Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5),
+              Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.7),
             ],
           ),
         ),
@@ -93,17 +70,16 @@ class _SexIntensityScreenState extends State<SexIntensityScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.local_fire_department, color: Colors.red[700], size: 40),
+                    Icon(Icons.local_fire_department, color: Theme.of(context).colorScheme.primary, size: 40),
                     SizedBox(width: 10),
                     Text(
                       'Sex Intensity',
-                      style: TextStyle(
-                        fontSize: 36,
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple[900],
+                        color: Theme.of(context).colorScheme.primary,
                         shadows: [
                           Shadow(
-                            color: Colors.redAccent,
+                            color: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
                             offset: Offset(2, 2),
                             blurRadius: 5,
                           ),
@@ -111,7 +87,7 @@ class _SexIntensityScreenState extends State<SexIntensityScreen> {
                       ),
                     ),
                     SizedBox(width: 10),
-                    Icon(Icons.local_fire_department, color: Colors.red[700], size: 40),
+                    Icon(Icons.local_fire_department, color: Theme.of(context).colorScheme.primary, size: 40),
                   ],
                 ),
                 SizedBox(height: 40),
@@ -121,11 +97,11 @@ class _SexIntensityScreenState extends State<SexIntensityScreen> {
                   width: 400,
                   padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Theme.of(context).colorScheme.surface.withOpacity(0.8), // Use theme surface color
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.redAccent.withOpacity(0.4),
+                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.3), // Use theme secondary color
                         spreadRadius: 5,
                         blurRadius: 7,
                       ),
@@ -135,59 +111,59 @@ class _SexIntensityScreenState extends State<SexIntensityScreen> {
                     children: [
                       TextField(
                         controller: _yourNameController,
-                        decoration: InputDecoration(
+                        decoration: InputDecoration( // Use theme InputDecoration
                           labelText: 'Your Sexy Name',
-                          labelStyle: TextStyle(color: Colors.deepPurple[700]),
-                          prefixIcon: Icon(Icons.person, color: Colors.redAccent),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            borderSide: BorderSide(color: Colors.redAccent),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            borderSide: BorderSide(color: Colors.deepPurple),
-                          ),
+                          // labelStyle: TextStyle(color: Colors.deepPurple[700]), // Handled by theme
+                          prefixIcon: Icon(Icons.person, color: Theme.of(context).colorScheme.secondary), // Use theme secondary color
+                          // border: OutlineInputBorder( // Handled by theme
+                          //   borderRadius: BorderRadius.circular(15),
+                          //   borderSide: BorderSide(color: Colors.redAccent),
+                          // ),
+                          // focusedBorder: OutlineInputBorder( // Handled by theme
+                          //   borderRadius: BorderRadius.circular(15),
+                          //   borderSide: BorderSide(color: Colors.deepPurple),
+                          // ),
                         ),
                       ),
                       SizedBox(height: 20),
                       TextField(
                         controller: _partnerNameController,
-                        decoration: InputDecoration(
+                        decoration: InputDecoration( // Use theme InputDecoration
                           labelText: "Your Lover's Name",
-                          labelStyle: TextStyle(color: Colors.deepPurple[700]),
-                          prefixIcon: Icon(Icons.favorite, color: Colors.redAccent),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.redAccent),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.deepPurple),
-                          ),
+                          // labelStyle: TextStyle(color: Colors.deepPurple[700]), // Handled by theme
+                          prefixIcon: Icon(Icons.favorite, color: Theme.of(context).colorScheme.secondary), // Use theme secondary color
+                          // border: OutlineInputBorder( // Handled by theme
+                          //   borderRadius: BorderRadius.circular(20),
+                          //   borderSide: BorderSide(color: Colors.redAccent),
+                          // ),
+                          // focusedBorder: OutlineInputBorder( // Handled by theme
+                          //   borderRadius: BorderRadius.circular(20),
+                          //   borderSide: BorderSide(color: Colors.deepPurple),
+                          // ),
                         ),
                       ),
                       SizedBox(height: 30),
 
                       // Calculate Button
-                      ElevatedButton(
+                      ElevatedButton( // Use theme ElevatedButton
                         onPressed: _calculateIntensity,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.redAccent,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 40,
-                            vertical: 15,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
+                        // style: ElevatedButton.styleFrom( // Handled by theme
+                        //   backgroundColor: Colors.redAccent,
+                        //   padding: EdgeInsets.symmetric(
+                        //     horizontal: 40,
+                        //     vertical: 15,
+                        //   ),
+                        //   shape: RoundedRectangleBorder(
+                        //     borderRadius: BorderRadius.circular(30),
+                        //   ),
+                        // ),
                         child: Text(
                           'Measure the Heat',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          // style: TextStyle( // Handled by theme
+                          //   fontSize: 18,
+                          //   color: Colors.white,
+                          //   fontWeight: FontWeight.bold,
+                          // ),
                         ),
                       ),
                     ],
@@ -202,26 +178,24 @@ class _SexIntensityScreenState extends State<SexIntensityScreen> {
                       children: [
                         Text(
                           'Passion Meter',
-                          style: TextStyle(
-                            fontSize: 24,
-                            color: Colors.deepPurple[900],
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith( // Use theme text style
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
                         SizedBox(height: 10),
                         Container(
                           padding: EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.8),
+                            color: Theme.of(context).colorScheme.surface.withOpacity(0.8), // Use theme surface color
                             borderRadius: BorderRadius.circular(15),
                           ),
                           child: Text(
                             _result,
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.red[800],
-                              fontStyle: FontStyle.italic,
-                            ),
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith( // Use theme text style
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontStyle: FontStyle.italic,
+                                ),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -231,12 +205,12 @@ class _SexIntensityScreenState extends State<SexIntensityScreen> {
                           width: 300,
                           child: LinearProgressIndicator(
                             value: _intensityPercentage / 100,
-                            backgroundColor: Colors.purple[100],
+                            backgroundColor: Theme.of(context).colorScheme.secondaryContainer, // Use theme secondary container
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.redAccent,
+                              Theme.of(context).colorScheme.primary, // Use theme primary
                             ),
                             minHeight: 12,
-                            borderRadius: BorderRadius.circular(6),
+                            // borderRadius: BorderRadius.circular(6), // Consider if this is needed or part of global theme
                           ),
                         ),
                       ],

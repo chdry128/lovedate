@@ -3,12 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'love_letter_generator.dart';
+import 'dateCalc.dart';
 import 'name.dart';
 import 'zodicMatch.dart';
 import 'quoteGen.dart';
 import 'loveCalc.dart';
 import 'package:heart_beat/IntenCalc.dart';
 import 'theam.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 // App routes for better navigation
 class AppRoutes {
@@ -19,6 +21,7 @@ class AppRoutes {
   static const String quotes = '/quotes';
   static const String nameMatch = '/name-match';
   static const String loveLetter = '/love-letter';
+  static const String relationshipTimer = '/relationship-timer';
 }
 
 void main() async {
@@ -32,6 +35,9 @@ void main() async {
 
   // Initialize Hive for local storage
   await Hive.initFlutter();
+
+  // Initialize dotenv
+  await dotenv.load(fileName: ".env");
 
   // Run the app
   runApp(const MyApp());
@@ -50,12 +56,13 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system, // Respect system theme
       home: const HomePage(),
       routes: {
-        AppRoutes.loveCalculator: (context) => const LoveCalculatorApp(),
-        AppRoutes.intensityCalculator: (context) => const SexIntensityApp(),
-        AppRoutes.compatibility: (context) => const ZodicApp(),
+        AppRoutes.loveCalculator: (context) => const LoveCalculatorScreen(),
+        AppRoutes.intensityCalculator: (context) => const SexIntensityScreen(),
+        AppRoutes.compatibility: (context) => const ZodicScreen(),
         AppRoutes.quotes: (context) => RomanticQuotesPage(),
         AppRoutes.nameMatch: (context) => const NameCompatibilityPage(),
         AppRoutes.loveLetter: (context) => const LoveLetterGeneratorPage(),
+        AppRoutes.relationshipTimer: (context) => RelationshipTimerPage(),
       },
     );
   }
