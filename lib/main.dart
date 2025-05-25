@@ -36,8 +36,20 @@ void main() async {
   // Initialize Hive for local storage
   await Hive.initFlutter();
 
-  // Initialize dotenv
-  await dotenv.load(fileName: ".env");
+  // Initialize dotenv and set API key directly
+  try {
+    // Try to load from .env file first
+    await dotenv.load(fileName: ".env");
+    print("Dotenv loaded successfully");
+  } catch (e) {
+    print("Warning: .env file not found. Error: $e");
+  }
+
+  // Always set the API key directly to ensure it's available
+  dotenv.env['OPENROUTER_API_KEY'] =
+      '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';
+  print("API Key set: ${dotenv.env['OPENROUTER_API_KEY']}");
+  print("All env variables: ${dotenv.env}");
 
   // Run the app
   runApp(const MyApp());
